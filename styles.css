@@ -3,9 +3,8 @@ body {
     height: 100%;
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
+.container, .container-xl {
+    position: relative;
 }
 
 div {
@@ -14,4 +13,15 @@ div {
 
 .header {
     align-items: center;
+}
+
+.intro {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: grey;
+    opacity: 50%;
+    z-index: 10;
 }

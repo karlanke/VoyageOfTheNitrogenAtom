@@ -43,6 +43,7 @@ $("#startButton").click(function () {
     activateState(states[startState])
 
     $("#transitionButton").show()
+    $("#startButton").hide()
 })
 
 $("#transitionButton").click(function () {

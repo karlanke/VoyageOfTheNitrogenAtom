@@ -25,3 +25,11 @@ div {
     opacity: 50%;
     z-index: 10;
 }
+
+.gameState {
+    cursor: pointer;
+}
+
+.gameState.inactive {
+    opacity: 50%;
+}

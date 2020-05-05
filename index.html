@@ -25,13 +25,18 @@
         </div>
         <div class="row">
             <div class="col-12 ui">
-                <object data="Nitrogen_Cycle_2.svg" type="image/svg+xml" id="svg" width="100%" height="100%"></object>
+                <div id='svgContainer'></div>
             </div>
         </div>
-
+        <div class="row">
+            <div class="col-12 text-center">
+                <button id="startButton" class="btn">Start</button>
+                <button id="transitionButton" class="btn" style="display: none;">Transition</button>
+            </div>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="source.js"></script>
+    <script type="module" src="source.js"></script>
 </body>
 
 </html>

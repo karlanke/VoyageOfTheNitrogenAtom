@@ -34,7 +34,12 @@ export function submitSpreadsheet() {
     var url = 'https://script.google.com/macros/s/AKfycbytMUeQfv8LKBDdeYsXdf4aMawaMUk0UNJoJIBKIeP0NvoqP_w6/exec';
     $("#nameField").val(name)
     for (var i = 1; i <= stateHistory.length; i++) {
-        $("#googleSheetsForm").append(`<input name="${'state' + i.toString()}" value="${stateNames[stateHistory[i - 1]]}" />`)
+        var key = stateHistory[i - 1];
+        var value = stateNames[key];
+        if (key == 'Ammonium') {
+            value = 'NH4';
+        }
+        $("#googleSheetsForm").append(`<input name="${'state' + i.toString()}" value="${value}" />`)
     }
 
     $.ajax({ // create an AJAX call...
@@ -59,8 +64,9 @@ function activateState(state) {
     if (stateHistory.length == 10) {
         var message = `You have ended as ${stateNames[state]}. Thanks for playing! Your journey:<br>`
         stateHistory.forEach(function (elem) {
-            message += stateNames[elem] + '<br />'
+            message += stateNames[elem] + '<br />';
         });
+        message += 'To see all the results so far, <a href="https://docs.google.com/spreadsheets/d/1-XH3qFglTEFt5ys_YN8mcJWrALtYuC9Oc-WowYegTq4/edit?usp=sharing" target=”_blank”>click here.</a>';
         $('#messageBox').html(message);
 
         $("#transitionButton").hide();
@@ -69,8 +75,11 @@ function activateState(state) {
         submitSpreadsheet();
     } else {
         $('#messageBox').html(`You are currently ${stateNames[state]}.`);
+
     }
 
+    $("#transitionButton").prop('disabled', false);
+    nextState = null;
 }
 
 $(document).ready(function () {
@@ -125,6 +134,8 @@ $("#transitionButton").click(function () {
     $('.gameState').removeClass('inactive');
 
     nextState = currentOption.state;
+
+    $("#transitionButton").prop('disabled', true);
 });
 
 $("#restartButton").click(function () {
@@ -132,9 +143,12 @@ $("#restartButton").click(function () {
 });
 
 $(document).on('click', '.gameState', function (e) {
-    if (nextState != null && $(this).attr('id') == nextState) {
-        activateState(nextState);
-    } else {
-        $.alertable.alert("Sorry, try again!")
+    if (nextState != null) {
+        if ($(this).attr('id') == nextState) {
+            activateState(nextState);
+        } else {
+            $.alertable.alert("Sorry, try again!")
+        }
     }
+
 })

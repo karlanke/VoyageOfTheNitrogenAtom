@@ -33,3 +33,7 @@ div {
 .gameState.inactive {
     opacity: 50%;
 }
+
+.largeText {
+    font-size: 30px !important;
+}

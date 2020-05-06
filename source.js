@@ -87,7 +87,9 @@ $(document).ready(function () {
     name = Cookies.get('name')
     if (name == null || name == "") {
         let tempName = '';
-        $.alertable.prompt("Welcome to the voyage of the nitrogen atom! Please enter your name, and click \"Start\" when you're ready to begin.").then(function (data) {
+        $.alertable.prompt("Welcome to the voyage of the nitrogen atom! Please enter your name, and click \"Start\" when you're ready to begin.", {
+            cancelButton: null
+        }).then(function (data) {
             return data.value
         }).then(function (value) {
             name = value

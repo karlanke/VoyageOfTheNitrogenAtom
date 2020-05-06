@@ -1,4 +1,4 @@
-const nh4 = "NH<sub>4</sub><sup>+</sup>"
+export const nh4 = "NH<sub>4</sub><sup>+</sup>"
 export const transitions = {
     'AtmosphericNitrogen': [
         {

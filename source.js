@@ -1,4 +1,4 @@
-import { transitions } from './constants.js';
+import { transitions, nh4 } from './constants.js';
 
 
 const states = [
@@ -12,11 +12,42 @@ const states = [
     'BacterialProtein'
 ]
 
+const stateNames = {
+    'Nitrites': 'Nitrite',
+    'Nitrates': 'Nitrate',
+    'Ammonium': nh4,
+    'Animals': 'Animal Protein',
+    'BacteroidAmmonia': 'Bacteroid Ammonia',
+    'Plants': 'Plant Protein',
+    'AtmosphericNitrogen': 'Nitrogen Gas',
+    'BacterialProtein': 'Bacterial Protein'
+}
+
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 var currentState;
 var stateHistory = []
+var name;
+
+export function submitSpreadsheet() {
+    var url = 'https://script.google.com/macros/s/AKfycbytMUeQfv8LKBDdeYsXdf4aMawaMUk0UNJoJIBKIeP0NvoqP_w6/exec';
+    $("#nameField").val(name)
+    for (var i = 1; i <= stateHistory.length; i++) {
+        $("#googleSheetsForm").append(`<input name="${'state' + i.toString()}" value="${stateNames[stateHistory[i - 1]]}" />`)
+    }
+
+    $.ajax({ // create an AJAX call...
+        data: $("#googleSheetsForm").serialize(), // get the form data
+        type: 'POST', // GET or POST
+        url: url, // the file to call
+        success: function (response) { // on success..
+            console.log(response)
+        }
+    }).fail(function (response) {
+        console.log(response);
+    })
+}
 
 function activateState(state) {
     $('.gameState').addClass('inactive');
@@ -24,6 +55,22 @@ function activateState(state) {
     console.log(state);
     currentState = state;
     stateHistory.push(state);
+
+    if (stateHistory.length == 10) {
+        var message = `You have ended as ${stateNames[state]}. Thanks for playing! Your journey:<br>`
+        stateHistory.forEach(function (elem) {
+            message += stateNames[elem] + '<br />'
+        });
+        $('#messageBox').html(message);
+
+        $("#transitionButton").hide();
+        $("#restartButton").show();
+
+        submitSpreadsheet();
+    } else {
+        $('#messageBox').html(`You are currently ${stateNames[state]}.`);
+    }
+
 }
 
 $(document).ready(function () {
@@ -36,6 +83,19 @@ $(document).ready(function () {
             });
         }
     })
+
+    name = Cookies.get('name')
+    if (name == null || name == "") {
+        let tempName = '';
+        $.alertable.prompt("Welcome to the voyage of the nitrogen atom! Please enter your name, and click \"Start\" when you're ready to begin.").then(function (data) {
+            return data.value
+        }).then(function (value) {
+            name = value
+            Cookies.set('name', name)
+        })
+    }
+
+
 });
 
 $("#startButton").click(function () {
@@ -45,6 +105,8 @@ $("#startButton").click(function () {
     $("#transitionButton").show()
     $("#startButton").hide()
 })
+
+var nextState;
 
 $("#transitionButton").click(function () {
     var options = transitions[currentState];
@@ -57,9 +119,20 @@ $("#transitionButton").click(function () {
             break;
         }
     }
+    $("#messageBox").html(currentOption.text)
+    $('.gameState').removeClass('inactive');
 
-    alert(currentOption.text);
+    nextState = currentOption.state;
+});
 
-    activateState(currentOption.state);
+$("#restartButton").click(function () {
+    location.reload();
+});
 
+$(document).on('click', '.gameState', function (e) {
+    if (nextState != null && $(this).attr('id') == nextState) {
+        activateState(nextState);
+    } else {
+        $.alertable.alert("Sorry, try again!")
+    }
 })
